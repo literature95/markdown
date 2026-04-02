@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface FileItem {
   id: number;
   title: string;

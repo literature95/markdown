@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3001/api';
 
 function getToken() {
   return localStorage.getItem('token');
@@ -6,9 +6,9 @@ function getToken() {
 
 async function request(endpoint: string, options: RequestInit = {}) {
   const token = getToken();
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...options.headers,
+    ...Object.fromEntries(new Headers(options.headers as HeadersInit)),
   };
 
   if (token) {
@@ -68,4 +68,15 @@ export async function deleteFile(id: number) {
   return request(`/files/${id}`, {
     method: 'DELETE',
   });
+}
+
+export async function createShare(fileId: number, expiresInHours?: number) {
+  return request('/shares', {
+    method: 'POST',
+    body: JSON.stringify({ fileId, expiresInHours }),
+  });
+}
+
+export async function getSharedFile(shareToken: string) {
+  return request(`/shares/${shareToken}`);
 }

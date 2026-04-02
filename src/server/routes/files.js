@@ -66,6 +66,9 @@ router.post('/', async (req, res) => {
       [req.user.id, title, content || '']
     );
 
+    const { saveDatabase } = require('../config/database');
+    saveDatabase();
+
     const result = db.exec('SELECT last_insert_rowid() as id');
     const id = result[0]?.values[0]?.[0];
 
@@ -75,7 +78,7 @@ router.post('/', async (req, res) => {
       content: content || '',
       created_at: new Date().toISOString()
     });
-  } catch (err) {
+  } catch (_err) {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -90,23 +93,37 @@ router.put('/:id', async (req, res) => {
     const { title, content } = req.body;
     const db = getDatabase();
 
-    db.run(
+    const result = db.run(
       'UPDATE files SET title = ?, content = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?',
       [title, content, req.params.id, req.user.id]
     );
 
+    const { saveDatabase } = require('../config/database');
+    saveDatabase();
+
+    if (result.changes === 0) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+
     res.json({ message: 'File updated successfully' });
-  } catch (err) {
+  } catch (_err) {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 router.delete('/:id', (req, res) => {
   const db = getDatabase();
-  db.run(
+  const result = db.run(
     'DELETE FROM files WHERE id = ? AND user_id = ?',
     [req.params.id, req.user.id]
   );
+
+  const { saveDatabase } = require('../config/database');
+  saveDatabase();
+
+  if (result.changes === 0) {
+    return res.status(404).json({ error: 'File not found' });
+  }
 
   res.json({ message: 'File deleted successfully' });
 });

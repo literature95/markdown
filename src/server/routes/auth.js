@@ -21,8 +21,8 @@ router.post('/register', async (req, res) => {
       message: 'User created successfully',
       user: { id: user.id, username: user.username, email: user.email }
     });
-  } catch (err) {
-    if (err.message.includes('UNIQUE constraint failed')) {
+  } catch (_err) {
+    if (_err.message.includes('UNIQUE constraint failed')) {
       return res.status(409).json({ error: 'Username or email already exists' });
     }
     res.status(500).json({ error: 'Internal server error' });
@@ -58,7 +58,7 @@ router.post('/login', async (req, res) => {
       token,
       user: { id: user.id, username: user.username, email: user.email }
     });
-  } catch (err) {
+  } catch (_err) {
     res.status(500).json({ error: 'Internal server error' });
   }
 });

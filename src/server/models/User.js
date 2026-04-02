@@ -12,6 +12,9 @@ class User {
         [username, hashedPassword, email || null]
       );
 
+      const { saveDatabase } = require('../config/database');
+      saveDatabase();
+
       const result = db.exec('SELECT last_insert_rowid() as id');
       const id = result[0]?.values[0]?.[0];
 

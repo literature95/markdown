@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { getFiles, createFile, updateFile, deleteFile } from '../api/client';
+import { useEffect, useState } from 'react';
+import { marked } from 'marked';
+import { getFiles, createFile, updateFile, deleteFile, createShare } from '../api/client';
 
 interface File {
   id: number;
@@ -15,6 +16,9 @@ function Home() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
+  const [shareLink, setShareLink] = useState('');
+  const [shareError, setShareError] = useState('');
 
   useEffect(() => {
     loadFiles();
@@ -59,10 +63,24 @@ function Home() {
         setSelectedFile(null);
         setTitle('');
         setContent('');
+        setShareLink('');
       }
       loadFiles();
     } catch (err) {
       console.error('Failed to delete file:', err);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!selectedFile) return;
+
+    try {
+      setShareError('');
+      const response = await createShare(selectedFile.id, 24);
+      setShareLink(response.link);
+    } catch (error: any) {
+      console.error('Failed to create share link:', error);
+      setShareError(error.response?.data?.error || 'Share failed');
     }
   };
 
@@ -114,12 +132,35 @@ function Home() {
               placeholder="File title"
               className="w-full text-2xl font-bold mb-4 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Write your markdown here..."
-              className="w-full h-96 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
-            />
+            <div className="mb-4 flex gap-2">
+              <button
+                onClick={() => setShowPreview(false)}
+                className={`px-4 py-2 rounded-lg ${!showPreview ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+              >
+                编辑
+              </button>
+              <button
+                onClick={() => setShowPreview(true)}
+                className={`px-4 py-2 rounded-lg ${showPreview ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+              >
+                预览
+              </button>
+            </div>
+            <div className={showPreview ? 'grid grid-cols-1 md:grid-cols-2 gap-4' : ''}>
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="Write your markdown here..."
+                className="w-full h-96 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+              />
+              {showPreview && (
+                <div
+                  className="w-full h-96 p-4 border border-gray-300 rounded-lg overflow-auto bg-white"
+                  style={{ whiteSpace: 'pre-wrap' }}
+                  dangerouslySetInnerHTML={{ __html: marked.parse(content || '输入 Markdown 后实时预览') }}
+                />
+              )}
+            </div>
             <div className="mt-4 flex gap-2">
               {isCreating ? (
                 <button
@@ -144,6 +185,14 @@ function Home() {
                   Delete
                 </button>
               )}
+              {selectedFile && (
+                <button
+                  onClick={handleShare}
+                  className="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600"
+                >
+                  Create Share Link
+                </button>
+              )}
               {(selectedFile || isCreating) && (
                 <button
                   onClick={() => {
@@ -151,6 +200,7 @@ function Home() {
                     setTitle('');
                     setContent('');
                     setIsCreating(false);
+                    setShareLink('');
                   }}
                   className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
                 >
@@ -158,6 +208,17 @@ function Home() {
                 </button>
               )}
             </div>
+            {shareError && (
+              <div className="mt-3 text-red-600">{shareError}</div>
+            )}
+            {shareLink && (
+              <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-green-700">Share link created:</p>
+                <a href={shareLink} target="_blank" rel="noreferrer" className="text-blue-600 underline">
+                  {shareLink}
+                </a>
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex items-center justify-center h-full text-gray-500">
