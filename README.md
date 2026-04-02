@@ -31,6 +31,46 @@
 | 数据库 | SQLite | 数据存储 |
 | 实时通信 | Socket.IO | 实时协作 |
 
+## 项目结构
+
+```
+markdown/
+├── src/
+│   ├── client/                 # 前端 React 代码
+│   │   ├── api/
+│   │   │   └── client.ts      # API 调用
+│   │   ├── components/
+│   │   │   ├── FileList.tsx   # 文件列表组件
+│   │   │   └── Header.tsx     # 导航栏组件
+│   │   ├── pages/
+│   │   │   ├── Home.tsx       # 主页
+│   │   │   └── Login.tsx      # 登录页
+│   │   ├── App.tsx            # 根组件
+│   │   ├── main.tsx           # 入口文件
+│   │   ├── index.css          # 全局样式
+│   │   └── index.html         # HTML 模板
+│   └── server/                # 后端 Express 代码
+│       ├── config/
+│       │   └── database.js    # SQLite 数据库配置
+│       ├── middlewares/
+│       │   └── auth.js        # JWT 认证中间件
+│       ├── models/
+│       │   └── User.js        # 用户模型
+│       ├── routes/
+│       │   ├── auth.js        # 认证路由
+│       │   └── files.js       # 文件路由
+│       ├── utils/
+│       │   └── validators.js  # 输入验证
+│       └── index.js           # 主服务器文件
+├── data/                      # 数据库文件目录
+├── docs/                      # 项目文档
+├── package.json
+├── vite.config.ts
+├── tailwind.config.js
+├── postcss.config.js
+└── tsconfig.json
+```
+
 ## 快速开始
 
 ```bash
@@ -38,8 +78,16 @@
 git clone <repository-url>
 cd markdown-1
 
-# 详细开发指南见 DEVELOPMENT.md
+# 安装依赖
+npm install
+
+# 启动开发服务器
+npm run dev
 ```
+
+访问 http://localhost:3000 查看应用。
+
+**详细开发指南见 [DEVELOPMENT.md](./DEVELOPMENT.md)**
 
 ## 项目文档
 
