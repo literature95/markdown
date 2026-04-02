@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 import { getFiles, createFile, updateFile, deleteFile, createShare } from '../api/client';
 
 interface File {
@@ -157,7 +158,7 @@ function Home() {
                 <div
                   className="w-full h-96 p-4 border border-gray-300 rounded-lg overflow-auto bg-white"
                   style={{ whiteSpace: 'pre-wrap' }}
-                  dangerouslySetInnerHTML={{ __html: marked.parse(content || '输入 Markdown 后实时预览') }}
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(marked.parse(content || '输入 Markdown 后实时预览') as string) }}
                 />
               )}
             </div>
