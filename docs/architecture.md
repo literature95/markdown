@@ -64,50 +64,53 @@
 ### 项目结构
 
 ```
-frontend/
+markdown-1/
 ├── src/
-│   ├── components/          # 可复用组件
-│   │   ├── Editor/          # Markdown 编辑器组件
-│   │   ├── FileList/        # 文件列表组件
-│   │   └── Layout/          # 布局组件
-│   ├── pages/               # 页面组件
-│   │   ├── Home/            # 首页
-│   │   ├── Editor/          # 编辑器页面
-│   │   ├── Login/           # 登录页
-│   │   └── Register/        # 注册页
-│   ├── hooks/               # 自定义 Hooks
-│   ├── services/            # API 服务层
-│   ├── stores/              # 状态管理
-│   ├── utils/               # 工具函数
-│   ├── App.tsx
-│   └── main.tsx
-└── index.html
+│   ├── server/               # 后端服务
+│   │   └── routes/          # 路由定义
+│   └── client/               # 前端应用
+│       ├── components/       # 可复用组件
+│       ├── pages/            # 页面组件
+│       └── styles/           # 样式文件
+├── docs/                     # 文档
+├── package.json
+├── tsconfig.json
+├── .env.example
+└── .gitignore
 ```
 
-## 后端架构
-
-### 技术选型理由
-
-1. **Express + Node.js**：轻量级 API 框架，与前端技术栈统一
-2. **SQLite**：无需额外部署，适合小型应用
-3. **Socket.IO**：封装 WebSocket，提供更可靠的实时通信
-
-### 项目结构
+### 前端结构 (src/client/)
 
 ```
-backend/
-├── src/
-│   ├── controllers/          # 控制器（处理请求逻辑）
-│   ├── middlewares/          # 中间件（认证、日志、错误处理）
-│   ├── models/               # 数据模型（数据库操作）
-│   ├── routes/               # 路由定义
-│   ├── utils/                # 工具函数
-│   ├── config/               # 配置文件
-│   └── index.js              # 入口文件
-├── data/                     # 数据目录
-│   └── markdown.db           # SQLite 数据库
-├── logs/                     # 日志目录
-└── package.json
+src/client/
+├── components/              # 可复用组件
+│   ├── Editor/              # Markdown 编辑器组件
+│   ├── FileList/            # 文件列表组件
+│   └── Layout/              # 布局组件
+├── pages/                   # 页面组件
+│   ├── Home/                # 首页
+│   ├── Editor/              # 编辑器页面
+│   ├── Login/               # 登录页
+│   └── Register/            # 注册页
+├── hooks/                   # 自定义 Hooks
+├── services/                # API 服务层
+├── stores/                  # 状态管理
+├── utils/                   # 工具函数
+├── App.tsx
+└── main.tsx
+```
+
+### 后端结构 (src/server/)
+
+```
+src/server/
+├── routes/                  # 路由定义
+├── controllers/             # 控制器（处理请求逻辑）
+├── models/                   # 数据模型
+├── middlewares/              # 中间件（认证、日志、错误处理）
+├── config/                   # 配置文件
+├── utils/                    # 工具函数
+└── index.js                 # 入口文件
 ```
 
 ## 数据库设计
