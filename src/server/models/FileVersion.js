@@ -1,4 +1,4 @@
-const { getDatabase, saveDatabase } = require('../config/database');
+import { getDatabase, saveDatabase } from '../config/database.js';
 
 class FileVersion {
   static async create(fileId, userId, content, message = '') {
@@ -95,4 +95,4 @@ class FileVersion {
   }
 }
 
-module.exports = FileVersion;
+export default FileVersion;

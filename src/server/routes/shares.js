@@ -1,7 +1,7 @@
-const express = require('express');
-const crypto = require('crypto');
-const { getDatabase, saveDatabase } = require('../config/database');
-const { authenticateToken } = require('../middlewares/auth');
+import express from 'express';
+import crypto from 'crypto';
+import { getDatabase, saveDatabase } from '../config/database.js';
+import { authenticateToken } from '../middlewares/auth.js';
 
 const router = express.Router();
 
@@ -66,4 +66,4 @@ router.get('/:token', (req, res) => {
   res.json({ file: fileData, expiresAt });
 });
 
-module.exports = router;
+export default router;

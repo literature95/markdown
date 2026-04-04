@@ -1,4 +1,4 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
 const registerSchema = Joi.object({
   username: Joi.string().alphanum().min(3).max(30).required(),
@@ -28,4 +28,4 @@ function validateFile(data) {
   return fileSchema.validate(data);
 }
 
-module.exports = { validateRegister, validateLogin, validateFile };
+export { validateRegister, validateLogin, validateFile };

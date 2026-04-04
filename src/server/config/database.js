@@ -1,8 +1,11 @@
-const initSqlJs = require('sql.js');
-const fs = require('fs');
-const path = require('path');
+import initSqlJs from 'sql.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const DB_PATH = process.env.DB_PATH || './data/markdown.db';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const dbPath = path.resolve(__dirname, '../../../', DB_PATH);
 let db;
 
@@ -86,4 +89,4 @@ function getDatabase() {
   return db;
 }
 
-module.exports = { initializeDatabase, getDatabase, saveDatabase };
+export { initializeDatabase, getDatabase, saveDatabase };

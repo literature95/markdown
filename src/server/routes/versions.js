@@ -1,6 +1,6 @@
-const express = require('express');
-const { authenticateToken } = require('../middlewares/auth');
-const FileVersion = require('../models/FileVersion');
+import express from 'express';
+import { authenticateToken } from '../middlewares/auth.js';
+import FileVersion from '../models/FileVersion.js';
 
 const router = express.Router();
 
@@ -40,4 +40,4 @@ router.post('/:fileId/versions/rollback/:versionId', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

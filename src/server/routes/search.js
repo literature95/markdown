@@ -1,6 +1,6 @@
-const express = require('express');
-const { getDatabase } = require('../config/database');
-const { authenticateToken } = require('../middlewares/auth');
+import express from 'express';
+import { getDatabase } from '../config/database.js';
+import { authenticateToken } from '../middlewares/auth.js';
 
 const router = express.Router();
 
@@ -37,4 +37,4 @@ router.get('/search', (req, res) => {
   res.json(rows);
 });
 
-module.exports = router;
+export default router;

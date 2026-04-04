@@ -1,6 +1,6 @@
-const express = require('express');
-const { authenticateToken } = require('../middlewares/auth');
-const axios = require('axios');
+import express from 'express';
+import { authenticateToken } from '../middlewares/auth.js';
+import axios from 'axios';
 
 const router = express.Router();
 
@@ -144,4 +144,4 @@ router.post('/ai/improve', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

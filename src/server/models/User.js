@@ -1,19 +1,18 @@
-const bcrypt = require('bcrypt');
-const { getDatabase } = require('../config/database');
+import bcrypt from 'bcrypt';
+import { getDatabase, saveDatabase } from '../config/database.js';
 
 class User {
   static async create(username, password, email) {
     const db = getDatabase();
-    const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-    try {
-      db.run(
-        'INSERT INTO users (username, password, email) VALUES (?, ?, ?)',
-        [username, hashedPassword, email || null]
-      );
+      try {
+        db.run(
+          'INSERT INTO users (username, password, email) VALUES (?, ?, ?)',
+          [username, hashedPassword, email || null]
+        );
 
-      const { saveDatabase } = require('../config/database');
-      saveDatabase();
+        saveDatabase();
 
       const result = db.exec('SELECT last_insert_rowid() as id');
       const id = result[0]?.values[0]?.[0];
@@ -68,4 +67,4 @@ class User {
   }
 }
 
-module.exports = User;
+export default User;

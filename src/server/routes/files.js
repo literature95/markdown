@@ -1,7 +1,7 @@
-const express = require('express');
-const { getDatabase } = require('../config/database');
-const { authenticateToken } = require('../middlewares/auth');
-const { validateFile } = require('../utils/validators');
+import express from 'express';
+import { getDatabase, saveDatabase } from '../config/database.js';
+import { authenticateToken } from '../middlewares/auth.js';
+import { validateFile } from '../utils/validators.js';
 
 const router = express.Router();
 
@@ -66,7 +66,6 @@ router.post('/', async (req, res) => {
       [req.user.id, title, content || '']
     );
 
-    const { saveDatabase } = require('../config/database');
     saveDatabase();
 
     const result = db.exec('SELECT last_insert_rowid() as id');
@@ -98,7 +97,6 @@ router.put('/:id', async (req, res) => {
       [title, content, req.params.id, req.user.id]
     );
 
-    const { saveDatabase } = require('../config/database');
     saveDatabase();
 
     if (result.changes === 0) {
@@ -128,4 +126,4 @@ router.delete('/:id', (req, res) => {
   res.json({ message: 'File deleted successfully' });
 });
 
-module.exports = router;
+export default router;
