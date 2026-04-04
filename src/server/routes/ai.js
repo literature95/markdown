@@ -4,19 +4,28 @@ import axios from 'axios';
 
 const router = express.Router();
 
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const isAIEnabled = Boolean(OPENAI_API_KEY);
+
 router.use(authenticateToken);
+
+router.use('/ai', (req, res, next) => {
+  if (!isAIEnabled) {
+    return res.status(503).json({
+      error: 'AI功能未启用',
+      details: '请在环境变量中配置 OPENAI_API_KEY 以启用AI功能',
+      hint: '在 .env 文件中添加: OPENAI_API_KEY=your-api-key'
+    });
+  }
+  next();
+});
 
 router.post('/ai/complete', async (req, res) => {
   try {
     const { prompt, content } = req.body;
-    
+
     if (!prompt) {
       return res.status(400).json({ error: 'Prompt is required' });
-    }
-
-    const openaiApiKey = process.env.OPENAI_API_KEY;
-    if (!openaiApiKey) {
-      return res.status(500).json({ error: 'OpenAI API key not configured' });
     }
 
     const response = await axios.post(
@@ -37,7 +46,7 @@ router.post('/ai/complete', async (req, res) => {
       },
       {
         headers: {
-          'Authorization': `Bearer ${openaiApiKey}`,
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
           'Content-Type': 'application/json'
         }
       }
@@ -48,21 +57,19 @@ router.post('/ai/complete', async (req, res) => {
     });
   } catch (error) {
     console.error('AI completion error:', error);
-    res.status(500).json({ error: 'AI completion failed' });
+    res.status(500).json({
+      error: 'AI completion failed',
+      details: error.response?.data?.error?.message || 'Unknown error'
+    });
   }
 });
 
 router.post('/ai/summarize', async (req, res) => {
   try {
     const { content } = req.body;
-    
+
     if (!content) {
       return res.status(400).json({ error: 'Content is required' });
-    }
-
-    const openaiApiKey = process.env.OPENAI_API_KEY;
-    if (!openaiApiKey) {
-      return res.status(500).json({ error: 'OpenAI API key not configured' });
     }
 
     const response = await axios.post(
@@ -72,18 +79,18 @@ router.post('/ai/summarize', async (req, res) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a helpful assistant that summarizes Markdown content. Provide a concise summary of the given content.'
+            content: 'You are a helpful assistant that summarizes Markdown content. Provide concise summaries.'
           },
           {
             role: 'user',
-            content: `Summarize the following Markdown content:\n\n${content}`
+            content: `Summarize the following content:\n\n${content}`
           }
         ],
-        temperature: 0.3
+        temperature: 0.5
       },
       {
         headers: {
-          'Authorization': `Bearer ${openaiApiKey}`,
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
           'Content-Type': 'application/json'
         }
       }
@@ -94,53 +101,10 @@ router.post('/ai/summarize', async (req, res) => {
     });
   } catch (error) {
     console.error('AI summarize error:', error);
-    res.status(500).json({ error: 'AI summarize failed' });
-  }
-});
-
-router.post('/ai/improve', async (req, res) => {
-  try {
-    const { content } = req.body;
-    
-    if (!content) {
-      return res.status(400).json({ error: 'Content is required' });
-    }
-
-    const openaiApiKey = process.env.OPENAI_API_KEY;
-    if (!openaiApiKey) {
-      return res.status(500).json({ error: 'OpenAI API key not configured' });
-    }
-
-    const response = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
-      {
-        model: 'gpt-3.5-turbo',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a helpful assistant that improves Markdown content. Enhance the given content for clarity, grammar, and readability while preserving the original meaning.'
-          },
-          {
-            role: 'user',
-            content: `Improve the following Markdown content:\n\n${content}`
-          }
-        ],
-        temperature: 0.5
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${openaiApiKey}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-
-    res.json({
-      improved: response.data.choices[0].message.content
+    res.status(500).json({
+      error: 'AI summarization failed',
+      details: error.response?.data?.error?.message || 'Unknown error'
     });
-  } catch (error) {
-    console.error('AI improve error:', error);
-    res.status(500).json({ error: 'AI improve failed' });
   }
 });
 
