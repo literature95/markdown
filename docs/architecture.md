@@ -8,12 +8,12 @@
 |------|----------|------|------|
 | 前端框架 | React + TypeScript | 构建用户界面 | 组件化开发、类型安全、生态丰富 |
 | Markdown 处理 | Marked + highlight.js | Markdown 渲染与代码高亮 | 性能优异、配置简单、支持扩展 |
-| 编辑器 | Monaco Editor | 代码编辑器 | VS Code 同款体验、功能强大 |
+| 编辑器 | Textarea + 预览机制 | 基于浏览器 textarea 和实时渲染预览 | 简单易维护、低依赖 |
 | 样式框架 | Tailwind CSS | 原子化 CSS 框架 | 快速构建美观界面、响应式设计 |
 | 后端 | Node.js + Express | 轻量级 API 服务 | JavaScript 全栈、开发效率高 |
-| 数据库 | SQLite | 轻量级数据库 | 无需额外部署、适合小型应用 |
-| 存储方案 | 本地文件系统 + Git | 文件存储与版本控制 | 简单直接、提供版本历史 |
-| 实时通信 | Socket.IO | WebSocket 封装库 | 自动降级、连接管理、事件驱动 |
+| 数据库 | SQLite (sql.js) | 本地文件数据库 | 无需额外部署、轻量持久化 |
+| 存储方案 | 本地 SQLite 文件 | 数据库存储于本地文件 | 适合小型应用、无需外部 DB |
+| 实时通信 | Socket.IO（依赖已安装，尚未集成） | 预留实时协作 | 计划用于后续实时协作 |
 | 认证授权 | JWT | 用户认证 | 无状态、跨域支持、易于实现 |
 | 部署工具 | Docker | 容器化部署 | 环境隔离、简化部署、易于扩展 |
 
@@ -58,59 +58,89 @@
 ### 技术选型理由
 
 1. **React + TypeScript**：提供良好的开发体验和类型安全
-2. **Monaco Editor**：VS Code 同款编辑器，专业级 Markdown 编辑体验
+2. **Textarea + 预览机制**：当前基于浏览器 textarea 和 Marked 实现 Markdown 编辑体验
 3. **Tailwind CSS**：原子化 CSS 框架，快速构建美观界面
 
 ### 项目结构
 
 ```
-markdown-1/
+markdown/
 ├── src/
-│   ├── server/               # 后端服务
-│   │   └── routes/          # 路由定义
-│   └── client/               # 前端应用
-│       ├── components/       # 可复用组件
-│       ├── pages/            # 页面组件
-│       └── styles/           # 样式文件
-├── docs/                     # 文档
+│   ├── client/              # 前端 React 代码
+│   │   ├── api/             # API 调用封装
+│   │   │   └── client.ts
+│   │   ├── components/      # 可复用组件
+│   │   │   ├── FileList.tsx
+│   │   │   └── Header.tsx
+│   │   ├── pages/           # 页面组件
+│   │   │   ├── Home.tsx
+│   │   │   └── Login.tsx
+│   │   ├── App.tsx
+│   │   ├── main.tsx
+│   │   ├── index.css
+│   │   └── index.html
+│   └── server/              # 后端 Express 代码
+│       ├── config/
+│       │   └── database.js
+│       ├── middlewares/
+│       │   └── auth.js
+│       ├── models/
+│       │   └── User.js
+│       ├── routes/
+│       │   ├── auth.js
+│       │   ├── files.js
+│       │   └── shares.js
+│       ├── utils/
+│       │   └── validators.js
+│       ├── index.js
+│       └── index.test.js
+├── docs/
+│   ├── architecture.md
+│   └── roadmap.md
 ├── package.json
+├── vite.config.ts
+├── tailwind.config.js
+├── postcss.config.js
 ├── tsconfig.json
-├── .env.example
-└── .gitignore
+└── .env.example
 ```
 
 ### 前端结构 (src/client/)
 
 ```
 src/client/
+├── api/                     # API 请求封装
+│   └── client.ts
 ├── components/              # 可复用组件
-│   ├── Editor/              # Markdown 编辑器组件
-│   ├── FileList/            # 文件列表组件
-│   └── Layout/              # 布局组件
+│   ├── FileList.tsx
+│   └── Header.tsx
 ├── pages/                   # 页面组件
-│   ├── Home/                # 首页
-│   ├── Editor/              # 编辑器页面
-│   ├── Login/               # 登录页
-│   └── Register/            # 注册页
-├── hooks/                   # 自定义 Hooks
-├── services/                # API 服务层
-├── stores/                  # 状态管理
-├── utils/                   # 工具函数
+│   ├── Home.tsx
+│   └── Login.tsx
 ├── App.tsx
-└── main.tsx
+├── main.tsx
+├── index.css
+└── index.html
 ```
 
 ### 后端结构 (src/server/)
 
 ```
 src/server/
-├── routes/                  # 路由定义
-├── controllers/             # 控制器（处理请求逻辑）
-├── models/                   # 数据模型
-├── middlewares/              # 中间件（认证、日志、错误处理）
-├── config/                   # 配置文件
-├── utils/                    # 工具函数
-└── index.js                 # 入口文件
+├── config/                  # 配置文件
+│   └── database.js
+├── middlewares/             # 中间件
+│   └── auth.js
+├── models/                  # 数据模型
+│   └── User.js
+├── routes/                  # 路由
+│   ├── auth.js
+│   ├── files.js
+│   └── shares.js
+├── utils/                   # 工具函数
+│   └── validators.js
+├── index.js
+└── index.test.js
 ```
 
 ## 数据库设计
@@ -164,30 +194,33 @@ src/server/
 | 字段 | 类型 | 约束 | 说明 |
 |------|------|------|------|
 | id | INTEGER | PRIMARY KEY AUTOINCREMENT | 文件 ID |
+| user_id | INTEGER | NOT NULL, FK(users.id) | 所有者 ID |
 | title | TEXT | NOT NULL | 文件标题 |
 | content | TEXT | | 文件内容（Markdown） |
-| owner_id | INTEGER | NOT NULL, FK(users.id) | 所有者 ID |
 | created_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 创建时间 |
 | updated_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 更新时间 |
 
 **索引：**
-- `idx_files_owner_id` ON `files(owner_id)`
+- `idx_files_user_id` ON `files(user_id)`
 - `idx_files_updated_at` ON `files(updated_at)`
 
-#### shares 共享表 (v1.1)
+#### shares 共享表
 
 | 字段 | 类型 | 约束 | 说明 |
 |------|------|------|------|
 | id | INTEGER | PRIMARY KEY AUTOINCREMENT | 共享 ID |
 | file_id | INTEGER | NOT NULL, FK(files.id) | 文件 ID |
-| user_id | INTEGER | NOT NULL, FK(users.id) | 被分享用户 ID |
-| permission | TEXT | NOT NULL, DEFAULT 'view' | 权限级别 |
+| share_token | TEXT | NOT NULL UNIQUE | 分享令牌 |
+| expires_at | DATETIME | | 过期时间 |
 | created_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 创建时间 |
 
 **索引：**
-- `idx_shares_file_user` ON `shares(file_id, user_id)` UNIQUE
+- `idx_shares_file_id` ON `shares(file_id)`
+- `idx_shares_token` ON `shares(share_token)`
 
-#### versions 版本表 (v1.1)
+#### versions 版本表 (规划)
+
+未来版本可扩展为完整 Git 版本控制。当前代码库尚未集成版本历史管理。
 
 | 字段 | 类型 | 约束 | 说明 |
 |------|------|------|------|
@@ -216,7 +249,7 @@ src/server/
 2. **同步策略**：
    - 字符级同步（细粒度）
    - 运营转换（OT）算法
-3. **状态管理**：Socket.IO 房间管理，每个文件一个房间
+3. **状态管理**：计划使用 Socket.IO 房间管理，每个文件一个房间，待后续集成
 
 ## 安全设计
 

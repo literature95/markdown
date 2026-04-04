@@ -2,7 +2,8 @@ const initSqlJs = require('sql.js');
 const fs = require('fs');
 const path = require('path');
 
-const dbPath = path.resolve(__dirname, '../../../data/markdown.db');
+const DB_PATH = process.env.DB_PATH || './data/markdown.db';
+const dbPath = path.resolve(__dirname, '../../../', DB_PATH);
 let db;
 
 async function initializeDatabase() {

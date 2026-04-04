@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-基于 Web 的跨平台 Markdown 文件共享系统，支持 Linux、Windows、macOS 三大平台间的文件共享、查看和协作编辑。
+基于 Web 的跨平台 Markdown 文件共享系统，支持 Linux、Windows、macOS 三大平台间的文件共享与查看。
 
 ## MVP 定义
 
@@ -13,7 +13,7 @@
 - [x] Markdown 实时预览
 
 ### v1.1 扩展功能（第二阶段）
-- [ ] 文件分享功能
+- [x] 文件分享功能
 - [ ] Git 版本控制
 - [ ] 实时协作编辑
 
@@ -26,10 +26,10 @@
 | 层级 | 技术 | 说明 |
 |------|------|------|
 | 前端 | React + TypeScript | 界面框架 |
-| 编辑器 | Monaco Editor | Markdown 编辑 |
+| 编辑器 | Textarea + Marked 实时预览 | Markdown 编辑 |
 | 后端 | Express + Node.js | API 服务 |
-| 数据库 | SQLite | 数据存储 |
-| 实时通信 | Socket.IO | 实时协作 |
+| 数据库 | SQLite (sql.js) | 数据存储 |
+| 实时通信 | Socket.IO（依赖已安装，尚未集成） | 预留实时协作 |
 
 ## 项目结构
 
@@ -76,7 +76,7 @@ markdown/
 ```bash
 # 克隆项目
 git clone <repository-url>
-cd markdown-1
+cd markdown
 
 # 安装依赖
 npm install

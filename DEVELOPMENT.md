@@ -12,31 +12,45 @@
 ## 项目结构
 
 ```
-markdown-1/
-├── backend/                    # 后端服务
-│   ├── src/
-│   │   ├── controllers/       # 控制器
-│   │   ├── middlewares/       # 中间件
-│   │   ├── models/            # 数据模型
-│   │   ├── routes/            # 路由
-│   │   ├── utils/             # 工具函数
-│   │   └── index.js           # 入口文件
-│   ├── package.json
-│   └── .env                   # 环境变量（需创建）
-├── frontend/                   # 前端应用
-│   ├── src/
-│   │   ├── components/        # 组件
-│   │   ├── pages/             # 页面
-│   │   ├── hooks/             # 自定义 Hooks
-│   │   ├── utils/             # 工具函数
-│   │   ├── App.tsx            # 根组件
-│   │   └── main.tsx           # 入口文件
-│   ├── package.json
-│   └── vite.config.ts
+markdown/
+├── src/
+│   ├── client/                 # 前端 React 代码
+│   │   ├── api/                # API 调用封装
+│   │   │   └── client.ts
+│   │   ├── components/         # 可复用组件
+│   │   │   ├── FileList.tsx
+│   │   │   └── Header.tsx
+│   │   ├── pages/              # 页面组件
+│   │   │   ├── Home.tsx
+│   │   │   └── Login.tsx
+│   │   ├── App.tsx
+│   │   ├── main.tsx
+│   │   ├── index.css
+│   │   └── index.html
+│   └── server/                 # 后端 Express 服务
+│       ├── config/
+│       │   └── database.js
+│       ├── middlewares/
+│       │   └── auth.js
+│       ├── models/
+│       │   └── User.js
+│       ├── routes/
+│       │   ├── auth.js
+│       │   ├── files.js
+│       │   └── shares.js
+│       ├── utils/
+│       │   └── validators.js
+│       ├── index.js
+│       └── index.test.js
 ├── docs/                      # 文档
 │   ├── architecture.md
 │   └── roadmap.md
-└── README.md
+├── package.json
+├── vite.config.ts
+├── tailwind.config.js
+├── postcss.config.js
+├── tsconfig.json
+└── .env.example
 ```
 
 ## 本地开发
@@ -46,91 +60,67 @@ markdown-1/
 ```bash
 # 克隆项目
 git clone <repository-url>
-cd markdown-1
-
-# 安装后端依赖
-cd backend
-npm install
-
-# 安装前端依赖
-cd ../frontend
+cd markdown
 npm install
 ```
 
 ### 2. 配置环境变量
 
-在后端目录创建 `.env` 文件：
+在项目根目录创建 `.env` 文件，或复制 `.env.example`：
 
-```env
-PORT=3000
-JWT_SECRET=your-secret-key-change-in-production
-DB_PATH=./data/markdown.db
-NODE_ENV=development
+```bash
+cp .env.example .env
 ```
 
 ### 3. 启动开发服务器
 
 ```bash
-# 终端1：启动后端
-cd backend
-npm run dev
-
-# 终端2：启动前端
-cd frontend
 npm run dev
 ```
 
-前端默认访问 http://localhost:5173，后端 API 默认 http://localhost:3000
+如果需要分别启动前后端：
+
+```bash
+npm run dev:server
+npm run dev:client
+```
+
+前端默认访问 http://localhost:5173，后端 API 默认 http://localhost:3001
 
 ## 常用命令
 
-### 后端
+### 开发模式
 
 ```bash
-cd backend
-
-npm run dev      # 开发模式启动
-npm start        # 生产模式启动
-npm test         # 运行测试
+npm run dev         # 同时启动前后端
+npm run dev:server  # 启动后端
+npm run dev:client  # 启动前端
 ```
 
-### 前端
+### 生产构建
 
 ```bash
-cd frontend
-
-npm run dev      # 开发模式启动
-npm run build    # 构建生产版本
-npm run preview  # 预览生产版本
-npm run lint     # 代码检查
+npm install
+npm run build
+npm start
 ```
 
 ## 测试
 
-### 后端测试
-
 ```bash
-cd backend
-npm test
-```
-
-### 前端测试
-
-```bash
-cd frontend
 npm test
 ```
 
 ## 代码规范
 
 - 提交前运行 `npm run lint`
-- 使用 ESLint + Prettier
+- 使用 ESLint
 - 分支命名：`feature/xxx`、`bugfix/xxx`、`docs/xxx`
 - Commit 信息遵循 Conventional Commits
 
 ## 数据库
 
-SQLite 数据库文件位于 `backend/data/markdown.db`，首次运行自动创建。
+SQLite 数据库文件位于 `data/markdown.db`，首次运行时自动创建。
 
 ### 数据库表结构
 
@@ -142,7 +132,8 @@ SQLite 数据库文件位于 `backend/data/markdown.db`，首次运行自动创�
 
 ```bash
 # 查看端口占用
-netstat -ano | findstr :3000
+lsof -i :3001
+```
 
 # 结束进程
 taskkill /PID <pid> /F

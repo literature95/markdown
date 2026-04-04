@@ -4,43 +4,49 @@
 
 | 方式 | 适用场景 | 难度 |
 |------|----------|------|
-| Docker Compose | 生产环境 | 中等 |
-| 手动部署 | 定制化需求 | 较高 |
+| 本地部署 | 开发环境 | 低 |
+| 生产部署 | 生产环境 | 中等 |
 
-## Docker 部署（推荐）
+## 本地部署
 
 ### 前置要求
 
-- Docker 24+
-- Docker Compose 2.0+
+- Node.js 18+
+- npm 9+
+- 可选：Nginx 反向代理
 
 ### 部署步骤
 
 ```bash
 # 1. 克隆项目
 git clone <repository-url>
-cd markdown-1
+cd markdown
+npm install
 
 # 2. 创建环境变量文件
-cp backend/.env.example backend/.env
+cp .env.example .env
 
 # 3. 编辑 .env 配置
-# PORT=3000
+# PORT=3001
 # JWT_SECRET=your-production-secret
-# DB_PATH=/app/data/markdown.db
+# DB_PATH=./data/markdown.db
+# NODE_ENV=production
+# APP_URL=http://localhost:3001
+# VITE_API_URL=http://localhost:3001/api
+# FRONTEND_URL=http://localhost:3000
 
-# 4. 构建并启动
-docker-compose up -d
+# 4. 构建前端
+npm run build
 
-# 5. 查看日志
-docker-compose logs -f
+# 5. 启动服务
+npm start
 ```
 
 ### 访问服务
 
-- 前端：http://localhost:80
-- 后端 API：http://localhost:3000
-- 健康检查：http://localhost:3000/api/health
+- 前端（开发模式）：http://localhost:5173
+- 后端 API：http://localhost:3001
+- 健康检查：http://localhost:3001/api/health
 
 ## 手动部署
 
@@ -58,7 +64,6 @@ sudo apt-get install -y nginx
 ### 2. 构建前端
 
 ```bash
-cd frontend
 npm install
 npm run build
 ```
@@ -66,7 +71,6 @@ npm run build
 ### 3. 配置后端
 
 ```bash
-cd backend
 npm install --production
 ```
 
@@ -78,7 +82,7 @@ server {
     server_name your-domain.com;
 
     location / {
-        root /path/to/markdown-1/frontend/dist;
+        root /path/to/markdown/dist/client;
         try_files $uri $uri/ /index.html;
     }
 
@@ -96,8 +100,7 @@ server {
 
 ```bash
 # 启动后端
-cd backend
-PORT=3000 JWT_SECRET=your-secret npm start
+PORT=3001 JWT_SECRET=your-secret npm start
 
 # 启动 Nginx
 sudo nginx -t
@@ -108,11 +111,13 @@ sudo systemctl restart nginx
 
 | 变量 | 必填 | 说明 | 示例 |
 |------|------|------|------|
-| PORT | 否 | 服务端口，默认 3000 | 3000 |
+| PORT | 否 | 服务端口，默认 3001 | 3001 |
 | JWT_SECRET | 是 | JWT 密钥（生产环境必须更改） | random-string |
 | DB_PATH | 否 | 数据库路径，默认 ./data/markdown.db | /app/data/markdown.db |
 | NODE_ENV | 否 | 运行环境，默认 development | production |
-| FRONTEND_URL | 否 | 前端地址，用于 CORS | http://localhost:5173 |
+| APP_URL | 否 | 后端应用 URL | http://localhost:3001 |
+| VITE_API_URL | 否 | 前端 API 基础地址 | http://localhost:3001/api |
+| FRONTEND_URL | 否 | 前端地址，用于 CORS | http://localhost:3000 |
 
 ## 上线前检查清单
 
@@ -141,27 +146,20 @@ sudo systemctl restart nginx
 ### 日志查看
 
 ```bash
-# Docker 部署
-docker-compose logs -f
-
-# 手动部署
-tail -f backend/logs/app.log
+tail -f src/server/logs/app.log
 ```
 
 ### 数据库备份
 
 ```bash
-# Docker 部署
-docker exec markdown-1-backend-1 sqlite3 /app/data/markdown.db ".backup /backup/markdown.db"
-
-# 手动部署
-sqlite3 backend/data/markdown.db ".backup backup/markdown.db"
+sqlite3 data/markdown.db ".backup backup/markdown.db"
 ```
 
 ### 更新部署
 
 ```bash
 git pull origin main
-docker-compose build
-docker-compose up -d
+npm install
+npm run build
+npm start
 ```
