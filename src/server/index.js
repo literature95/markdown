@@ -19,6 +19,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const HOST = '0.0.0.0';
 
 app.use(cors());
 app.use(express.json());
@@ -46,7 +47,7 @@ async function startServer() {
   });
 
   // Always listen for requests
-  app.listen(PORT, () => {
+  app.listen(PORT, HOST, () => {
     console.log(`Server running on port ${PORT}`);
   });
 }

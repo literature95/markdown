@@ -4,13 +4,13 @@ import axios from 'axios';
 
 const router = express.Router();
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const isAIEnabled = Boolean(OPENAI_API_KEY);
+const getOpenAIKey = () => process.env.OPENAI_API_KEY;
+const isAIEnabled = () => Boolean(getOpenAIKey());
 
 router.use(authenticateToken);
 
 router.use('/ai', (req, res, next) => {
-  if (!isAIEnabled) {
+  if (!isAIEnabled()) {
     return res.status(503).json({
       error: 'AI功能未启用',
       details: '请在环境变量中配置 OPENAI_API_KEY 以启用AI功能',
@@ -46,7 +46,7 @@ router.post('/ai/complete', async (req, res) => {
       },
       {
         headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Authorization': `Bearer ${getOpenAIKey()}`,
           'Content-Type': 'application/json'
         }
       }
@@ -90,7 +90,7 @@ router.post('/ai/summarize', async (req, res) => {
       },
       {
         headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Authorization': `Bearer ${getOpenAIKey()}`,
           'Content-Type': 'application/json'
         }
       }
