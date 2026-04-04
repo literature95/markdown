@@ -24,6 +24,7 @@
 - [x] 苹果风格 UI 重设计
 
 ### v1.1 扩展功能
+- [x] 文件版本历史
 - [ ] Git 版本控制
 - [ ] 实时协作编辑
 
@@ -49,7 +50,8 @@ markdown/
 ├── src/
 │   ├── client/                 # 前端 React 代码
 │   │   ├── api/
-│   │   │   └── client.ts      # API 调用
+│   │   │   ├── client.ts      # API 调用
+│   │   │   └── socket.ts      # WebSocket 通信
 │   │   ├── components/
 │   │   │   └── Header.tsx     # 导航栏组件
 │   │   ├── pages/
@@ -65,83 +67,97 @@ markdown/
 │       ├── middlewares/
 │       │   └── auth.js        # JWT 认证中间件
 │       ├── models/
+│       │   ├── FileVersion.js # 文件版本模型
 │       │   └── User.js        # 用户模型
 │       ├── routes/
+│       │   ├── ai.js          # AI 路由
 │       │   ├── auth.js        # 认证路由
 │       │   ├── files.js       # 文件路由
+│       │   ├── search.js      # 搜索路由
 │       │   ├── shares.js      # 分享路由
-│       │   ├── ai.js          # AI 路由
-│       │   └── search.js      # 搜索路由
+│       │   └── versions.js    # 版本路由
 │       ├── utils/
 │       │   └── validators.js  # 输入验证
-│       └── index.js           # 主服务器文件
+│       ├── index.js           # 主服务器文件
+│       └── index.test.js      # 服务器测试
 ├── data/                      # 数据库文件目录
 ├── docs/                      # 项目文档
+│   ├── architecture.md        # 架构文档
+│   └── roadmap.md             # 路线图
+├── tests/                     # 测试文件
+│   └── api.test.js            # API 测试
+├── .env                       # 环境变量配置
+├── .env.example               # 环境变量示例
+├── .eslintrc.js              # ESLint 配置
+├── .gitignore                # Git 忽略文件
+├── API.md                    # API 文档
+├── DEPLOYMENT.md             # 部署文档
+├── DEVELOPMENT.md             # 开发文档
 ├── package.json
-├── vite.config.ts
-├── tailwind.config.js
-├── postcss.config.js
-├── tsconfig.json
-└── .env                       # 环境变量配置
+├── tailwind.config.js        # Tailwind CSS 配置
+├── tsconfig.json             # TypeScript 配置
+├── tsconfig.node.json        # Node TypeScript 配置
+└── vite.config.ts            # Vite 配置
 ```
+
+## 开发进度
+
+### 已完成
+- [x] 项目初始化与配置
+- [x] 数据库设计与实现
+- [x] 用户认证系统 (JWT)
+- [x] 文件 CRUD 操作
+- [x] 文件分享功能
+- [x] 文件版本历史
+- [x] 苹果风格 UI 重设计
+- [x] 登录/注册页面
+- [x] 主页文档管理界面
+
+### 进行中
+- [ ] 全文搜索功能
+- [ ] AI 辅助编辑
+
+### 待开发
+- [ ] Git 版本控制集成
+- [ ] 实时协作编辑
 
 ## 快速开始
 
+### 环境要求
+- Node.js >= 18.0.0
+- npm >= 9.0.0
+
+### 安装依赖
 ```bash
-# 克隆项目
-git clone <repository-url>
-cd markdown
-
-# 安装依赖
 npm install
+```
 
-# 启动开发服务器（前端 + 后端）
+### 启动开发服务器
+```bash
 npm run dev
 ```
 
 访问 http://localhost:3000 查看应用。
 
-## 环境变量
-
-```env
-PORT=3001              # 服务器端口
-JWT_SECRET=your-secret # JWT 密钥
-DB_PATH=./data/markdown.db  # 数据库路径
-NODE_ENV=development   # 运行环境
+### 构建生产版本
+```bash
+npm run build
 ```
 
-## 设计规范
+### 环境变量配置
+复制 `.env.example` 为 `.env` 并配置：
+```bash
+cp .env.example .env
+```
 
-### 颜色系统
-- Primary: #0071e3
-- Primary Hover: #0077ed
-- Background: #ffffff
-- Background Secondary: #f5f5f7
-- Text: #1d1d1f
-- Text Secondary: #86868b
-- Border: #d2d2d7
-- Error: #ff3b30
+## API 文档
 
-### 圆角
-- Small: 8px
-- Medium: 12px
-- Large: 16px
-- Extra Large: 24px
+详见 [API.md](./API.md)
 
-### 阴影
-- sm: 0 1px 3px rgba(0,0,0,0.08)
-- md: 0 4px 12px rgba(0,0,0,0.1)
-- lg: 0 12px 40px rgba(0,0,0,0.12)
+## 部署文档
 
-## 项目进度
+详见 [DEPLOYMENT.md](./DEPLOYMENT.md)
 
-### 2026-04-04 更新
-- [x] 端口配置统一为 3001
-- [x] 前端 UI 苹果风格重设计
-- [x] Header 导航栏重设计（毛玻璃效果、用户头像下拉菜单）
-- [x] 登录/注册页面重设计（渐变背景、居中卡片）
-- [x] 主页布局重设计（侧边栏文件列表、主编辑区）
-- [x] 全局 CSS 设计系统构建
+## 开发文档
 
-### 历史进度
-详见 [版本规划](./docs/roadmap.md)
+详见 [DEVELOPMENT.md](./DEVELOPMENT.md)
