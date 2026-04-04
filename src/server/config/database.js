@@ -54,6 +54,19 @@ async function initializeDatabase() {
     )
   `);
 
+  db.run(`
+    CREATE TABLE IF NOT EXISTS file_versions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      file_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      content TEXT NOT NULL,
+      message TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (file_id) REFERENCES files(id),
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
+
   saveDatabase();
   console.log('Database initialized successfully');
 }
